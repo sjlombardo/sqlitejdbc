@@ -35,18 +35,24 @@ build/$(target)/$(LIBNAME): build/$(sqlite)-$(target)/sqlite3.o build/org/sqlite
 	$(CC) $(CFLAGS) -c -o build/$(target)/NativeDB.o \
 		src/org/sqlite/NativeDB.c
 	$(CC) $(CFLAGS) $(LINKFLAGS) -o build/$(target)/$(LIBNAME) \
-		build/$(target)/NativeDB.o build/$(sqlite)-$(target)/*.o
+		build/$(target)/NativeDB.o build/$(sqlite)-$(target)/*.o \
+	        -lcrypto
 	$(STRIP) build/$(target)/$(LIBNAME)
 
 build/$(sqlite)-%/sqlite3.o: dl/$(sqlite)-amal.zip
 	@mkdir -p build/$(sqlite)-$*
-	unzip -qo dl/$(sqlite)-amal.zip -d build/$(sqlite)-$*
+	cp ../sqlcipher/sqlite3.c build/$(sqlite)-$*
+	cp ../sqlcipher/sqlite3.h build/$(sqlite)-$*
+	cp ../sqlcipher/src/sqlite3ext.h build/$(sqlite)-$*
+#	unzip -qo dl/$(sqlite)-amal.zip -d build/$(sqlite)-$*
 	perl -pi -e "s/sqlite3_api;/sqlite3_api = 0;/g" \
 	    build/$(sqlite)-$*/sqlite3ext.h
 	(cd build/$(sqlite)-$*; $(CC) -o sqlite3.o -c $(CFLAGS) \
 	    -DSQLITE_ENABLE_COLUMN_METADATA \
 	    -DSQLITE_ENABLE_FTS3 \
 	    -DSQLITE_THREADSAFE=1 \
+	    -DSQLITE_HAS_CODEC \
+	    -I../openssl-0.9.8k/include \
 	    sqlite3.c)
 
 build/org/%.class: src/org/%.java
