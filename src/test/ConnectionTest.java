@@ -51,4 +51,54 @@ public class ConnectionTest
         conn.close();
         prep.clearParameters();
     }
+    
+    @Test public void sqlCipherTest() throws SQLException {
+        File testdb = new File("cipher.db");
+        if (testdb.exists()) testdb.delete();
+
+        Connection conn = DriverManager.getConnection("jdbc:sqlite:cipher.db");
+        PreparedStatement prep = conn.prepareStatement("pragma key='123';");
+        prep.executeUpdate();
+        prep.close();
+
+        prep = conn.prepareStatement("create table foo (bar integer);");
+        prep.executeUpdate();
+        prep.close();
+
+        prep = conn.prepareStatement("insert into foo (bar) values (1);");
+        prep.executeUpdate();
+        prep.close();
+
+        conn.close();
+
+        conn = DriverManager.getConnection("jdbc:sqlite:cipher.db");
+
+        ResultSet rs = null;
+
+        try {
+            prep = conn.prepareStatement("select bar from foo");
+            rs = prep.executeQuery();
+            assertTrue(false);
+        } 
+        catch (java.sql.SQLException e)
+        {
+            prep.close();
+            assertTrue(true);
+        }
+        
+        conn = DriverManager.getConnection("jdbc:sqlite:cipher.db");
+        
+        prep = conn.prepareStatement("pragma key='123';");
+        prep.executeUpdate();
+        prep.close();
+
+        prep = conn.prepareStatement("select bar from foo");
+        rs = prep.executeQuery();
+
+        assertTrue(rs.next());
+        assertEquals(rs.getInt(1), 1);
+
+        prep.close();
+        conn.close();
+    }
 }
