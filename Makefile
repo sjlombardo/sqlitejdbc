@@ -20,9 +20,10 @@ include Makefile.common
 default: test
 
 test: native $(test_classes)
-	$(JAVA) -Djava.library.path=build/$(target) \
-	    -cp "build/$(sqlitejdbc)-native.jar$(sep)build$(sep)$(libjunit)" \
-	    org.junit.runner.JUnitCore $(tests)
+	LD_LIBRARY_PATH=build/$(target) DYLD_LIBRARY_PATH=build/$(target) \
+		$(JAVA) -Djava.library.path=build/$(target) \
+			-cp "build/$(sqlitejdbc)-native.jar$(sep)build$(sep)$(libjunit)" \
+			org.junit.runner.JUnitCore $(tests)
 
 native: build/$(sqlitejdbc)-native.jar build/$(target)/$(LIBNAME)
 
