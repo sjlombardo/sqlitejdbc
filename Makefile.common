@@ -18,10 +18,12 @@ ifeq ($(os),)
 endif
 
 # Windows uses different path separators, because they hate me
+ifeq ($(sep),)
 ifeq ($(os),Win)
 	sep := ;
 else
 	sep := :
+endif
 endif
 
 ifeq ($(arch),)
@@ -33,9 +35,9 @@ sqlite := sqlite-$(sqlite_version)
 
 sqlitejdbc := sqlitejdbc-v$(shell cat VERSION)
 
-jni_md := $(shell find -L "$(JAVA_HOME)/include" -name jni_md.h | head -1)
-ifneq ($(jni_md),)
-jni_include := $(shell dirname "$(jni_md)")
+jni_h := $(shell find -L "$(JAVA_HOME)/include" -name jni.h | head -1)
+ifneq ($(jni_h),)
+jni_include := $(shell dirname "$(jni_h)")
 endif
 
 libjdbc  := $(wildcard lib/jdbc-*.jar)

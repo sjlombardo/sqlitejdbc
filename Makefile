@@ -37,7 +37,7 @@ build/$(target)/$(LIBNAME): build/$(sqlite)-$(target)/sqlite3.o build/org/sqlite
 		src/org/sqlite/NativeDB.c
 	$(CC) $(CFLAGS) $(LINKFLAGS) -o build/$(target)/$(LIBNAME) \
 		build/$(target)/NativeDB.o build/$(sqlite)-$(target)/*.o \
-	        -lcrypto
+	        ../openssl-1.0.0d/libcrypto.dll.a
 	$(STRIP) build/$(target)/$(LIBNAME)
 
 build/$(sqlite)-%/sqlite3.o: dl/$(sqlite)-amal.zip
@@ -53,8 +53,9 @@ build/$(sqlite)-%/sqlite3.o: dl/$(sqlite)-amal.zip
 	    -DSQLITE_ENABLE_FTS3 \
 	    -DSQLITE_THREADSAFE=1 \
 	    -DSQLITE_HAS_CODEC \
-	    -I../openssl-0.9.8k/include \
-	    sqlite3.c)
+	    -I../../../openssl-1.0.0d/include \
+	    sqlite3.c \
+	)
 
 build/org/%.class: src/org/%.java
 	@mkdir -p build
