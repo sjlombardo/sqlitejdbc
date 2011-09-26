@@ -37,23 +37,24 @@ build/$(target)/$(LIBNAME): build/$(sqlite)-$(target)/sqlite3.o build/org/sqlite
 		src/org/sqlite/NativeDB.c
 	$(CC) $(CFLAGS) $(LINKFLAGS) -o build/$(target)/$(LIBNAME) \
 		build/$(target)/NativeDB.o build/$(sqlite)-$(target)/*.o \
-	        -lcrypto
+	        -L../sqlcipher-windows -llibeay32
 	$(STRIP) build/$(target)/$(LIBNAME)
 
 build/$(sqlite)-%/sqlite3.o: dl/$(sqlite)-amal.zip
 	@mkdir -p build/$(sqlite)-$*
-	cp ../sqlcipher/sqlite3.c build/$(sqlite)-$*
-	cp ../sqlcipher/sqlite3.h build/$(sqlite)-$*
+	cp ../sqlcipher-windows/sqlite3.c build/$(sqlite)-$*
+	cp ../sqlcipher-windows/sqlite3.h build/$(sqlite)-$*
+	cp ../sqlcipher-windows/sqlite3.c build/$(sqlite)-$*
 	cp ../sqlcipher/src/sqlite3ext.h build/$(sqlite)-$*
 #	unzip -qo dl/$(sqlite)-amal.zip -d build/$(sqlite)-$*
-	perl -pi -e "s/sqlite3_api;/sqlite3_api = 0;/g" \
-	    build/$(sqlite)-$*/sqlite3ext.h
+#	perl -pi -e "s/sqlite3_api;/sqlite3_api = 0;/g" \
+#	    build/$(sqlite)-$*/sqlite3ext.h
 	(cd build/$(sqlite)-$*; $(CC) -o sqlite3.o -c $(CFLAGS) \
 	    -DSQLITE_ENABLE_COLUMN_METADATA \
 	    -DSQLITE_ENABLE_FTS3 \
 	    -DSQLITE_THREADSAFE=1 \
 	    -DSQLITE_HAS_CODEC \
-	    -I../openssl-0.9.8k/include \
+	    -I../../../openssl/build/include \
 	    sqlite3.c)
 
 build/org/%.class: src/org/%.java
@@ -67,8 +68,8 @@ build/test/%.class: src/test/%.java
 
 dl/$(sqlite)-amal.zip:
 	@mkdir -p dl
-	curl -odl/$(sqlite)-amal.zip \
-	http://www.sqlite.org/sqlite-amalgamation-$(subst .,_,$(sqlite_version)).zip
+#	curl -odl/$(sqlite)-amal.zip \
+#	http://www.sqlite.org/sqlite-amalgamation-$(subst .,_,$(sqlite_version)).zip
 
 clean:
 	rm -rf build dist

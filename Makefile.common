@@ -68,8 +68,8 @@ Darwin_CFLAGS    := -I$(JAVA_HOME)/include -Os -fPIC
 Darwin_LINKFLAGS := -dynamiclib $(Support10_4)
 Darwin_LIBNAME   := libsqlitejdbc.jnilib
 
-Win_CC           := $(arch)-mingw32msvc-gcc
-Win_STRIP        := $(arch)-mingw32msvc-strip
+Win_CC           := gcc
+Win_STRIP        := strip
 Win_CFLAGS       := -D_JNI_IMPLEMENTATION_ -Ilib/inc_win -O
 Win_LINKFLAGS    := -Wl,--kill-at -shared
 Win_LIBNAME      := sqlitejdbc.dll
